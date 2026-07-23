@@ -213,7 +213,7 @@ export default function Dashboard() {
               {generating ? (
                 <>
                   <span className="spinner" />
-                  Claude が執筆中...（20秒ほど）
+                  執筆中です（20秒ほどお待ちください）
                 </>
               ) : (
                 "提案書を生成する"
@@ -236,21 +236,21 @@ export default function Dashboard() {
             }}
           >
             <div className="badge" style={{ marginBottom: 0 }}>
-              生成結果（DBに保存済み）
+              生成結果（保存済み）
             </div>
             <div style={{ display: "flex", gap: 8 }}>
               <button
                 className="btn-ghost"
                 onClick={() => downloadMarkdown(result, resultTitle)}
               >
-                ⬇ Markdown (.md)
+                Markdownで保存
               </button>
               <button
                 className="btn-ghost"
                 onClick={exportDocx}
                 disabled={exporting}
               >
-                {exporting ? "作成中..." : "⬇ Word (.docx)"}
+                {exporting ? "作成中..." : "Wordで保存"}
               </button>
             </div>
           </div>
