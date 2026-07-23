@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
+import { SAMPLES } from "../../lib/samples";
 
 // 最小限のMarkdown→HTML変換（見出し・箇条書き・強調のみ）
 function mdToHtml(md) {
@@ -128,7 +129,7 @@ export default function Dashboard() {
         </Link>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <span style={{ fontSize: 13, color: "var(--muted)" }}>
-            {session.user.email}
+            {session.user.email || "ゲスト利用中"}
           </span>
           <button className="btn-ghost" onClick={logout}>
             ログアウト
@@ -141,6 +142,24 @@ export default function Dashboard() {
         <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 4 }}>
           会社情報を入力すると、Claude がその場で提案書を書きます。結果はあなた専用の履歴としてDBに保存されます。
         </p>
+
+        <div style={{ marginTop: 16 }}>
+          <span style={{ fontSize: 13, color: "var(--muted)", marginRight: 10 }}>
+            サンプルで入力:
+          </span>
+          {SAMPLES.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className="btn-ghost"
+              style={{ marginRight: 8, marginTop: 6 }}
+              onClick={() => setForm({ ...s.form })}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
         <form onSubmit={generate}>
           <label className="label">会社名 *</label>
           <input
