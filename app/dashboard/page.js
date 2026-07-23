@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabaseClient";
 import { SAMPLES } from "../../lib/samples";
+import { downloadMarkdown, downloadDocx } from "../../lib/exporters";
 
 // 最小限のMarkdown→HTML変換（見出し・箇条書き・強調のみ）
 function mdToHtml(md) {
@@ -51,6 +52,8 @@ export default function Dashboard() {
   });
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState(null);
+  const [resultTitle, setResultTitle] = useState("提案書");
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
   const router = useRouter();
@@ -99,11 +102,21 @@ export default function Dashboard() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
       setResult(json.output_md);
+      setResultTitle(form.company_name);
       loadHistory();
     } catch (err) {
       setError(err.message);
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function exportDocx() {
+    setExporting(true);
+    try {
+      await downloadDocx(result, resultTitle);
+    } finally {
+      setExporting(false);
     }
   }
 
@@ -213,7 +226,34 @@ export default function Dashboard() {
 
       {result && (
         <div className="panel">
-          <div className="badge">生成結果（DBに保存済み）</div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 10,
+            }}
+          >
+            <div className="badge" style={{ marginBottom: 0 }}>
+              生成結果（DBに保存済み）
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                className="btn-ghost"
+                onClick={() => downloadMarkdown(result, resultTitle)}
+              >
+                ⬇ Markdown (.md)
+              </button>
+              <button
+                className="btn-ghost"
+                onClick={exportDocx}
+                disabled={exporting}
+              >
+                {exporting ? "作成中..." : "⬇ Word (.docx)"}
+              </button>
+            </div>
+          </div>
           <div
             className="output"
             dangerouslySetInnerHTML={{ __html: mdToHtml(result) }}
@@ -235,7 +275,10 @@ export default function Dashboard() {
           <div
             key={h.id}
             className="history-item"
-            onClick={() => setResult(h.output_md)}
+            onClick={() => {
+              setResult(h.output_md);
+              setResultTitle(h.company_name);
+            }}
           >
             <strong>{h.company_name}</strong>{" "}
             <span style={{ color: "var(--muted)" }}>（{h.industry}）</span>
