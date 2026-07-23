@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SampleGallery from "./components/SampleGallery";
 
 export default function Home() {
   return (
@@ -34,13 +35,13 @@ export default function Home() {
         <div className="steps">
           <div className="step">
             <div className="num">STEP 1</div>
-            <h3>メールでログイン</h3>
-            <p>Magic Link が実際に届きます（Supabase Auth）</p>
+            <h3>ログイン</h3>
+            <p>Magic Link またはゲストで1クリック（Supabase Auth）</p>
           </div>
           <div className="step">
             <div className="num">STEP 2</div>
             <h3>会社情報を入力</h3>
-            <p>会社名・業種・強み・提案先を入れるだけ</p>
+            <p>サンプルボタンでワンクリック入力もOK</p>
           </div>
           <div className="step">
             <div className="num">STEP 3</div>
@@ -54,6 +55,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <SampleGallery />
 
       <footer className="footer">
         Built end-to-end with osi-deploy — GitHub / Vercel / Supabase / Claude
